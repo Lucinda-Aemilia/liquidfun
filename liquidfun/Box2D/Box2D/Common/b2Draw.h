@@ -23,17 +23,21 @@
 #include <Box2D/Common/b2Math.h>
 #include <Box2D/Particle/b2Particle.h>
 
-/// Color for debug drawing. Each value has the range [0,1].
+/// Color for debug drawing.
+///
+/// Each value has the range [0,1].
 struct b2Color
 {
 	b2Color() {}
 	b2Color(float32 r, float32 g, float32 b) : r(r), g(g), b(b) {}
 	void Set(float32 ri, float32 gi, float32 bi) { r = ri; g = gi; b = bi; }
-	float32 r, g, b;
+	float32 r, g, b; ///< The corresponding R, G, B value
 };
 
-/// Implement and register this class with a b2World to provide debug drawing of physics
-/// entities in your game.
+/// Class for drawing entities
+///
+/// This class is to be implemented and registered with a b2World to provide debug drawing of physics
+/// entities.
 class b2Draw
 {
 public:
@@ -55,6 +59,7 @@ public:
 	void SetFlags(uint32 flags);
 
 	/// Get the drawing flags.
+	/// \return the drawing flags
 	uint32 GetFlags() const;
 
 	/// Append flags to the current flags.
@@ -86,7 +91,7 @@ public:
 	virtual void DrawTransform(const b2Transform& xf) = 0;
 
 protected:
-	uint32 m_drawFlags;
+	uint32 m_drawFlags; ///< The draw flags.
 };
 
 #endif

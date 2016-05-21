@@ -22,7 +22,9 @@
 
 #include <Box2D/Common/b2Settings.h>
 
-/// Timer for profiling. This has platform specific code and may
+/// Timer for profiling. 
+///
+/// This has been implemented for Windows, Linux and OS X, and may
 /// not work on every platform.
 class b2Timer
 {
@@ -39,11 +41,15 @@ public:
 
 private:
 	/// Get platform specific tick count
+	///
+	/// \return tick count
 	static int64 GetTicks();
 
 #if defined(_WIN32)
+	/// The inverse of the time frequency
 	static float64 s_invFrequency;
 #endif
+	/// The time at the construction or the last reset.
 	int64 m_start;
 };
 
