@@ -22,7 +22,12 @@
 #include <Box2D/Common/b2Settings.h>
 #include <math.h>
 
-/// This function is used to ensure that a floating point number is not a NaN or infinity.
+/// Ensure that a floating point number is not a NaN or infinity.
+///
+/// Convert the float32 value into int32 bitwisely.\n
+/// For floating point numbers, INF = 0x7f800000, NaN = 0xffc00000, -INF = 0xff800000.
+/// \param x a floating point number
+/// \return if x is valid
 inline bool b2IsValid(float32 x)
 {
 	union {
@@ -70,7 +75,7 @@ struct b2Vec2
 	/// Negate this vector.
 	b2Vec2 operator -() const { b2Vec2 v; v.Set(-x, -y); return v; }
 
-	/// Read from and indexed element.
+	/// Read from an indexed element.
 	float32 operator () (int32 i) const
 	{
 		return (&x)[i];
@@ -101,6 +106,7 @@ struct b2Vec2
 	}
 
 	/// Get the length of this vector (the norm).
+	/// \return length of this vector
 	float32 Length() const
 	{
 		return b2Sqrt(x * x + y * y);
@@ -108,12 +114,14 @@ struct b2Vec2
 
 	/// Get the length squared. For performance, use this instead of
 	/// b2Vec2::Length (if possible).
+	/// \return length of this vector squared
 	float32 LengthSquared() const
 	{
 		return x * x + y * y;
 	}
 
-	/// Convert this vector into a unit vector. Returns the length.
+	/// Convert this vector into a unit vector. 
+	/// \return the length.
 	float32 Normalize()
 	{
 		float32 length = Length();
@@ -129,12 +137,14 @@ struct b2Vec2
 	}
 
 	/// Does this vector contain finite coordinates?
+	/// \return if the vector contains finite (valid) coordinates
 	bool IsValid() const
 	{
 		return b2IsValid(x) && b2IsValid(y);
 	}
 
 	/// Get the skew vector such that dot(skew_vec, other) == cross(vec, other)
+	/// \return the skew vector
 	b2Vec2 Skew() const
 	{
 		return b2Vec2(-y, x);
@@ -203,13 +213,15 @@ struct b2Vec3
 		x *= s; y *= s; z *= s;
 	}
 
-		/// Get the length of this vector (the norm).
+	/// Get the length of this vector (the norm).
+	/// \return the length
 	float32 Length() const
 	{
 		return b2Sqrt(x * x + y * y + z * z);
 	}
 
-	/// Convert this vector into a unit vector. Returns the length.
+	/// Convert this vector into a unit vector. 
+	/// \return the length.
 	float32 Normalize()
 	{
 		float32 length = Length();
@@ -247,6 +259,8 @@ struct b2Mat22
 	b2Mat22() {}
 
 	/// Construct this matrix using columns.
+	/// \param c1 the first column
+	/// \param c2 the second column
 	b2Mat22(const b2Vec2& c1, const b2Vec2& c2)
 	{
 		ex = c1;
@@ -254,6 +268,10 @@ struct b2Mat22
 	}
 
 	/// Construct this matrix using scalars.
+	/// \param a11 \f$a_{1 1}\f$
+	/// \param a12 \f$a_{1 2}\f$
+	/// \param a21 \f$a_{2 1}\f$
+	/// \param a22 \f$a_{2 2}\f$
 	b2Mat22(float32 a11, float32 a12, float32 a21, float32 a22)
 	{
 		ex.x = a11; ex.y = a21;
@@ -261,6 +279,8 @@ struct b2Mat22
 	}
 
 	/// Initialize this matrix using columns.
+	/// \param c1 The first column vector
+	/// \param c2 The second column vector
 	void Set(const b2Vec2& c1, const b2Vec2& c2)
 	{
 		ex = c1;
@@ -281,6 +301,11 @@ struct b2Mat22
 		ex.y = 0.0f; ey.y = 0.0f;
 	}
 
+	/// Return the inverse matrix of this.
+	///
+	/// \f$ A^{-1} = \frac{1}{det(A)} \left[ \begin{array}{cc} a_{22} & -a_{12} \\ -a_{21} & a_{11} \end{array} \right] \f$
+	/// \return Inverse matrix of this.
+	/// \retval 0 If this is a singular matrix.
 	b2Mat22 GetInverse() const
 	{
 		float32 a = ex.x, b = ey.x, c = ex.y, d = ey.y;
@@ -295,8 +320,15 @@ struct b2Mat22
 		return B;
 	}
 
-	/// Solve A * x = b, where b is a column vector. This is more efficient
-	/// than computing the inverse in one-shot cases.
+	/// Solve A * X = b
+	///
+	/// This is more efficient
+	/// than computing the inverse in one-shot cases.\n
+	/// \f$ A^{-1} = \frac{1}{det(A)} \left[ \begin{array}{cc} a_{22} & -a_{12} \\ -a_{21} & a_{11} \end{array} \right] \f$ \n
+	/// \f$ X = A^{-1}b \f$
+	/// \param b A column vector. 
+	/// \return Solution of A * X = b
+	/// \retval 0 If this is a singular matrix
 	b2Vec2 Solve(const b2Vec2& b) const
 	{
 		float32 a11 = ex.x, a12 = ey.x, a21 = ex.y, a22 = ey.y;
@@ -311,7 +343,15 @@ struct b2Mat22
 		return x;
 	}
 
-	b2Vec2 ex, ey;
+	/// The first column vector.
+	///
+	/// \f$ \alpha_{1} = \left[ \begin{array}{c} a_{11} \\ a_{21} \end{array} \right] \f$
+	b2Vec2 ex;
+
+	/// The second column vector.
+	///
+	/// \f$ \alpha_{2} = \left[ \begin{array}{c} a_{12} \\ a_{22} \end{array} \right] \f$
+	b2Vec2 ey;
 };
 
 /// A 3-by-3 matrix. Stored in column-major order.
@@ -321,6 +361,9 @@ struct b2Mat33
 	b2Mat33() {}
 
 	/// Construct this matrix using columns.
+	/// \param c1 The first column vector
+	/// \param c2 The second column vector
+	/// \param c3 The third column vector
 	b2Mat33(const b2Vec3& c1, const b2Vec3& c2, const b2Vec3& c3)
 	{
 		ex = c1;
@@ -336,21 +379,42 @@ struct b2Mat33
 		ez.SetZero();
 	}
 
-	/// Solve A * x = b, where b is a column vector. This is more efficient
-	/// than computing the inverse in one-shot cases.
+	/// Solve A * X = b
+	///
+	/// This is more efficient
+	/// than computing the inverse in one-shot cases.\n
+	/// \f$ det(A) = \alpha_{1} \cdot ( \alpha_{2} \times \alpha_{3}) = (\alpha_{2}, \alpha_{3}, \alpha_{1})\f$ \n
+	/// \f$ X_{1} = det(A) b \cdot (\alpha_{2} \times \alpha_{3}) = det(A) (\alpha_{2}, \alpha_{3}, b)\f$ \n
+	/// \f$ X_{2} = det(A) \alpha_{1} \cdot (b \times \alpha_{3}) = det(A) (b, \alpha_{3}, \alpha_{1})\f$ \n
+	/// \f$ X_{3} = det(A) \alpha_{1} \cdot (\alpha_{2} \times b) = det(A) (\alpha_{2}, b, \alpha_{1})\f$ \n
+	/// \param b A column vector. 
+	/// \return The solution of A * X = b
+	/// \retval 0 If this is a singular matrix.
 	b2Vec3 Solve33(const b2Vec3& b) const;
 
-	/// Solve A * x = b, where b is a column vector. This is more efficient
+	/// Solve A * X = b  
+	///
+	/// This is more efficient
 	/// than computing the inverse in one-shot cases. Solve only the upper
-	/// 2-by-2 matrix equation.
+	/// 2-by-2 matrix equation.\n
+	/// Let \f$ A_{1 1} = \left[ \begin{array}{cc} a_{11} & a_{12} \\ a_{21} & a_{22} \end{array} \right]\f$ \n
+	/// \f$ det(A_{11}) = a_{11} a_{22} - a_{12} a_{21}\f$ \n
+	/// \f$ A_{11}^{-1} = \frac{1}{det(A_{11})} \left[ \begin{array}{cc} a_{22} & -a_{12} \\ -a_{21} & a_{11} \end{array} \right] \f$ \n
+	/// \f$ X = A_{11}^{-1}b \f$
+	/// \param b A column vector.
+	/// \return The solution of A * X = b
+	/// \retval 0 If this is a singular matrix
 	b2Vec2 Solve22(const b2Vec2& b) const;
 
 	/// Get the inverse of this matrix as a 2-by-2.
-	/// Returns the zero matrix if singular.
+	/// 
+	/// 
+	/// \return The 2-by-2 matrix, with all the other elements in the matrix set to sero
+	/// \retval 0 If this is a singular matrix
 	void GetInverse22(b2Mat33* M) const;
 
 	/// Get the symmetric inverse of this matrix as a 3-by-3.
-	/// Returns the zero matrix if singular.
+	/// \return 0 If this is a singular matrix
 	void GetSymInverse33(b2Mat33* M) const;
 
 	b2Vec3 ex, ey, ez;

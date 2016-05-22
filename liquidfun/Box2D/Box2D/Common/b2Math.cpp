@@ -20,8 +20,6 @@
 
 const b2Vec2 b2Vec2_zero(0.0f, 0.0f);
 
-/// Solve A * x = b, where b is a column vector. This is more efficient
-/// than computing the inverse in one-shot cases.
 b2Vec3 b2Mat33::Solve33(const b2Vec3& b) const
 {
 	float32 det = b2Dot(ex, b2Cross(ey, ez));
@@ -36,8 +34,6 @@ b2Vec3 b2Mat33::Solve33(const b2Vec3& b) const
 	return x;
 }
 
-/// Solve A * x = b, where b is a column vector. This is more efficient
-/// than computing the inverse in one-shot cases.
 b2Vec2 b2Mat33::Solve22(const b2Vec2& b) const
 {
 	float32 a11 = ex.x, a12 = ey.x, a21 = ex.y, a22 = ey.y;

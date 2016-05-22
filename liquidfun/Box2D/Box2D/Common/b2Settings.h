@@ -17,6 +17,10 @@
 * 3. This notice may not be removed or altered from any source distribution.
 */
 
+/// \file b2Settings.h
+/// Place to look for global variables, enums, functions
+/// and macro definitions
+
 #ifndef B2_SETTINGS_H
 #define B2_SETTINGS_H
 
@@ -40,7 +44,8 @@
 #define B2_DEBUG_STATEMENT(A)
 #endif  // DEBUG
 
-// Calculate the size of a static array.
+/// \def B2_ARRAY_SIZE(x)
+/// Calculate the size of a static array.
 #define B2_ARRAY_SIZE(x) (sizeof(x) / sizeof((x)[0]))
 
 typedef signed char	int8;
